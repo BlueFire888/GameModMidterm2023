@@ -21,6 +21,12 @@ public:
 
 protected:
 	int						hitscans;
+	
+	//Make shotgun melee
+	void				Attack(void);
+	float               range;
+	rvClientEffectPtr	impactEffect;
+	int					impactMaterial;
 
 private:
 
@@ -51,6 +57,10 @@ void rvWeaponShotgun::Spawn( void ) {
 	hitscans   = spawnArgs.GetFloat( "hitscans" );
 	
 	SetState( "Raise", 0 );	
+
+	range = spawnArgs.GetFloat("range", "100");
+	impactMaterial = -1;
+	impactEffect = NULL;
 }
 
 /*
@@ -163,8 +173,13 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 	};	
 	switch ( parms.stage ) {
 		case STAGE_INIT:
-			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-			Attack( false, hitscans, spread, 0, 1.0f );
+			
+			//Normal shotgun attack
+			//Attack( false, hitscans, spread, 0, 1.0f );
+
+			//melee shotgun
+			Attack();
+			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
 			PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
 			return SRESULT_STAGE( STAGE_WAIT );
 	
@@ -287,3 +302,86 @@ stateResult_t rvWeaponShotgun::State_Reload ( const stateParms_t& parms ) {
 	return SRESULT_ERROR;	
 }
 			
+
+void rvWeaponShotgun::Attack(void) {
+	trace_t		tr;
+	idEntity* ent;
+	// Cast a ray out to the lock range
+// RAVEN BEGIN
+// ddynerman: multiple clip worlds
+	gameLocal.TracePoint(owner, tr, playerViewOrigin,playerViewOrigin + playerViewAxis[0] * range, MASK_SHOT_RENDERMODEL, owner);
+	// RAVEN END
+	owner->WeaponFireFeedback(&weaponDef->dict);
+
+	if (tr.fraction >= 1.0f) {
+		if (impactEffect) {
+			impactEffect->Stop();
+			impactEffect = NULL;
+		}
+		impactMaterial = -1;
+		return;
+	}
+
+	// Entity we hit?
+	ent = gameLocal.entities[tr.c.entityNum];
+
+	// If the impact material changed then stop the impact effect 
+	if ((tr.c.materialType && tr.c.materialType->Index() != impactMaterial) ||
+		(!tr.c.materialType && impactMaterial != -1)) {
+		if (impactEffect) {
+			impactEffect->Stop();
+			impactEffect = NULL;
+		}
+		impactMaterial = -1;
+	}
+
+	// In singleplayer-- the gauntlet never effects marine AI
+	if (!gameLocal.isMultiplayer) {
+		idActor* actor_ent = 0;
+
+		//ignore both the body and the head.
+		if (ent->IsType(idActor::GetClassType())) {
+			actor_ent = static_cast<idActor*>(ent);
+		}
+		else if (ent->IsType(idAFAttachment::GetClassType())) {
+			actor_ent = static_cast<idActor*>(ent->GetBindMaster());
+		}
+
+		if (actor_ent && actor_ent->team == gameLocal.GetLocalPlayer()->team) {
+			return;
+		}
+	}
+
+	//multiplayer-- don't gauntlet dead stuff
+	if (gameLocal.isMultiplayer) {
+		idPlayer* player;
+		if (ent->IsType(idPlayer::GetClassType())) {
+			player = static_cast<idPlayer*>(ent);
+			if (player->health <= 0) {
+				return;
+			}
+		}
+
+	}
+
+	if (!impactEffect) {
+		impactMaterial = tr.c.materialType ? tr.c.materialType->Index() : -1;
+		impactEffect = gameLocal.PlayEffect(gameLocal.GetEffect(spawnArgs, "fx_impact", tr.c.materialType), tr.endpos, tr.c.normal.ToMat3(), true);
+	}
+	else {
+		impactEffect->SetOrigin(tr.endpos);
+		impactEffect->SetAxis(tr.c.normal.ToMat3());
+	}
+	// Do damage?
+	if (gameLocal.time > nextAttackTime) {
+		if (ent) {
+			if (ent->fl.takedamage) {
+				float dmgScale = 1.0f;
+				dmgScale *= owner->PowerUpModifier(PMOD_MELEE_DAMAGE);
+				ent->Damage(owner, owner, playerViewAxis[0], spawnArgs.GetString("def_damage"), dmgScale, 0);
+			}
+		}
+		//nextAttackTime = gameLocal.time + fireRate;
+	}
+}
+

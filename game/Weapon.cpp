@@ -2505,7 +2505,6 @@ rvWeapon::Attack
 void rvWeapon::Attack( bool altAttack, int num_attacks, float spread, float fuseOffset, float power ) {
 	idVec3 muzzleOrigin;
 	idMat3 muzzleAxis;
-	
 	if ( !viewModel ) {
 		common->Warning( "NULL viewmodel %s\n", __FUNCTION__ );
 		return;
@@ -2617,6 +2616,7 @@ void rvWeapon::LaunchProjectiles ( idDict& dict, const idVec3& muzzleOrigin, con
 	idVec3			dir;
 	idBounds		ownerBounds;
 
+	gameLocal.Printf("%s \n", "Projectile Weapon ");
 	if ( gameLocal.isClient ) {
 		return;
 	}
@@ -2749,6 +2749,8 @@ void rvWeapon::Hitscan( const idDict& dict, const idVec3& muzzleOrigin, const id
 	idBitMsg	msg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
+	gameLocal.Printf("%s %d \n", "Hitscan Weapon", weaponDef->dict.GetBool("shotgunSpreadStyle"));
+
 	// Let the AI know about the new attack
 	if ( !gameLocal.isMultiplayer ) {
 		aiManager.ReactToPlayerAttack( owner, muzzleOrigin, muzzleAxis[0] );
@@ -2802,7 +2804,7 @@ void rvWeapon::Hitscan( const idDict& dict, const idVec3& muzzleOrigin, const id
 			end += ( u * muzzleAxis[ 2 ] );
 #else
 			end = muzzleOrigin + ( ( 8192 * 16 ) * playerViewAxis[ 0 ] );
-			end += ( r * playerViewAxis[ 1 ] );
+		    end += ( r * playerViewAxis[ 1 ] );
 			end += ( u * playerViewAxis[ 2 ] );
 #endif
 			dir = end - muzzleOrigin;
