@@ -1846,6 +1846,7 @@ void idPlayer::Spawn( void ) {
 		
 		objectiveSystem = NULL;
 
+
 		if ( spawnArgs.GetString( "hud", "", temp ) ) {
 			hud = uiManager->FindGui( temp, true, false, true );
 		} else {
@@ -14078,3 +14079,18 @@ int idPlayer::CanSelectWeapon(const char* weaponName)
 }
 
 // RITUAL END
+
+
+void idPlayer::PlayerUpgrade() {
+	gameLocal.Printf("%s\n", "Made it into function, woot woot!");
+	idUserInterface* _hud;
+	_hud = GetHud();
+	if (!_hud) {
+		gameLocal.Printf("%s\n","Null HUD sily :)");
+		return;
+	}
+	_hud->SetStateString("upgrade", "Pick an Upgrade");
+	_hud->HandleNamedEvent("hideUpgrade");
+	_hud->Redraw(gameLocal.time);
+
+}

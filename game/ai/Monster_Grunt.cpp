@@ -196,6 +196,7 @@ rvMonsterGrunt::OnDeath
 */
 void rvMonsterGrunt::OnDeath ( void ) {
 	RageStop ( );
+	gameLocal.SpawnEntityDef("monster_grunt");
 	return idAI::OnDeath ( );
 }
 

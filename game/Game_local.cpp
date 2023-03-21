@@ -5737,9 +5737,9 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 		if ( !ent || ent != ent->GetDamageEntity ( ) ) {
 			continue;
 		}
-
+		
 		// Dont damage inflictor or the ignore entity
-		if( ent == inflictor || ent == ignoreDamage ) {
+		if( ent == inflictor || ent == ignoreDamage) {
 			continue;
 		}
 
@@ -5774,7 +5774,7 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 
 		lastEnt = ent;
 
-		if ( ent->CanDamage( origin, damagePoint, ignoreDamage ) ) {						
+		if ( ent->CanDamage( origin, damagePoint, ignoreDamage )) {						
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
 			if( gameLocal.isMultiplayer ) {

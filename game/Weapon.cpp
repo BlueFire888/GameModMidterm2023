@@ -2616,7 +2616,6 @@ void rvWeapon::LaunchProjectiles ( idDict& dict, const idVec3& muzzleOrigin, con
 	idVec3			dir;
 	idBounds		ownerBounds;
 
-	gameLocal.Printf("%s \n", "Projectile Weapon ");
 	if ( gameLocal.isClient ) {
 		return;
 	}
@@ -2749,7 +2748,9 @@ void rvWeapon::Hitscan( const idDict& dict, const idVec3& muzzleOrigin, const id
 	idBitMsg	msg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
 
-	gameLocal.Printf("%s %d \n", "Hitscan Weapon", weaponDef->dict.GetBool("shotgunSpreadStyle"));
+	gameLocal.Printf("%s", "An attempt");
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	if(player){ player->PlayerUpgrade(); }
 
 	// Let the AI know about the new attack
 	if ( !gameLocal.isMultiplayer ) {
