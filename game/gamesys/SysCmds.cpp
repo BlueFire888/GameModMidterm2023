@@ -3038,6 +3038,28 @@ void Cmd_ClientOverflowReliable_f( const idCmdArgs& args ) {
 }
 #endif
 
+//MJ START
+void Cmd_UpgradeSelect1_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	if (!player) {
+		gameLocal.Printf("%s\n", "Null Player");
+		return;
+	}
+	idUserInterface* _hud = player->GetHud();
+	if (!_hud) {
+		gameLocal.Printf("%s\n", "Null HUD");
+		return;
+	}
+	const char* weapon;
+	weapon = _hud->GetStateString("gui::upgrade1");
+	if (!weapon) {
+		gameLocal.Printf("%s\n", "Null Weapon");
+		return;
+	}
+	gameLocal.Printf("%s\n", weapon);
+	player->PlayerUpgrade();
+}
+
 /*
 =================
 idGameLocal::InitConsoleCommands
@@ -3233,6 +3255,8 @@ void idGameLocal::InitConsoleCommands( void ) {
 	cmdSystem->AddCommand( "buy",					Cmd_BuyItem_f,				CMD_FL_GAME,				"Buy an item (if in a buy zone and the game type supports it)" );
 // RITUAL END
 
+// MJ START
+	cmdSystem->AddCommand("upgrade1", Cmd_UpgradeSelect1_f, CMD_FL_GAME, "Picks Upgrade 1");
 }
 
 /*

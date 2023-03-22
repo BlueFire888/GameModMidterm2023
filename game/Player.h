@@ -796,7 +796,13 @@ public:
 	void					ResetCash();
 // RITUAL END
 
+	//MJ START
 	void PlayerUpgrade();
+	void LevelUp();
+	idStr GetLevelUpText();
+
+	//MJ END
+
 
 protected:
 	void					SetupHead( const char* modelKeyName = "", idVec3 headOffset = idVec3(0, 0, 0) );

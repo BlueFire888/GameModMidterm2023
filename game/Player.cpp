@@ -14082,15 +14082,83 @@ int idPlayer::CanSelectWeapon(const char* weaponName)
 
 
 void idPlayer::PlayerUpgrade() {
-	gameLocal.Printf("%s\n", "Made it into function, woot woot!");
 	idUserInterface* _hud;
-	_hud = GetHud();
-	if (!_hud) {
-		gameLocal.Printf("%s\n","Null HUD sily :)");
-		return;
-	}
-	_hud->SetStateString("upgrade", "Pick an Upgrade");
+	_hud = this->GetHud();
+	if (!_hud) {return;}
 	_hud->HandleNamedEvent("hideUpgrade");
-	_hud->Redraw(gameLocal.time);
+	//_hud->Redraw(gameLocal.time);
 
+}
+
+void idPlayer::LevelUp() {
+	idUserInterface* _hud;
+	_hud = this->GetHud();
+	if (!_hud) { return; }
+	_hud->SetStateString("upgradetitle", "Level Up!");
+	idStr Upgrade1 = GetLevelUpText();
+	idStr Upgrade2 = GetLevelUpText();
+	while (Upgrade2 == Upgrade1) {
+		Upgrade2 = GetLevelUpText();
+	}
+	idStr Upgrade3 = GetLevelUpText();
+	while (Upgrade3 == Upgrade1 || Upgrade3 == Upgrade2) {
+		Upgrade3 = GetLevelUpText();
+	}
+	Upgrade1.Insert("1] ", 0);
+	_hud->SetStateString("upgrade1", Upgrade1.c_str());
+	Upgrade2.Insert("2] ", 0);
+	_hud->SetStateString("upgrade2", Upgrade2.c_str());
+	Upgrade3.Insert("3] ", 0);
+	_hud->SetStateString("upgrade3", Upgrade3.c_str());
+	Upgrade1.FreeData();
+	Upgrade2.FreeData();
+	Upgrade3.FreeData();
+}
+
+idStr idPlayer::GetLevelUpText() {
+	//MJ start
+	int weaponid = (rand() % 6) + 1;
+	char* name;
+	const char* attribute;
+	switch (weaponid)
+	{
+	case 1:
+		name = "Lightning Wand ";
+		break;
+	case 2:
+		name = "Fireball Wand ";
+		break;
+	case 3:
+		name = "Whip ";
+		break;
+	case 4:
+		name = "Health ";
+		break;
+	case 5:
+		name = "Damage ";
+		break;
+	case 6:
+		name = "Attack Speed ";
+		break;
+	default:
+		name = "Attack Speed";
+		break;
+	}
+	idStr output(name);
+	if (weaponid <= 3)
+	{
+		int attributeid = (rand() % 2) + 1;
+		if (attributeid == 1) {
+			attribute = "Damage ";
+			output += attribute;
+		}
+		else {
+			attribute = "Attack Speed ";
+			output += attribute;
+		}
+	}
+	output += "Up";
+	return output;
+
+	// MJ END
 }

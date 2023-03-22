@@ -2747,11 +2747,11 @@ void rvWeapon::Hitscan( const idDict& dict, const idVec3& muzzleOrigin, const id
 
 	idBitMsg	msg;
 	byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
+	//MJ Start
+	idPlayer *player = gameLocal.GetLocalPlayer();
+	player->LevelUp();
 
-	gameLocal.Printf("%s", "An attempt");
-	idPlayer* player = gameLocal.GetLocalPlayer();
-	if(player){ player->PlayerUpgrade(); }
-
+	//MJ End
 	// Let the AI know about the new attack
 	if ( !gameLocal.isMultiplayer ) {
 		aiManager.ReactToPlayerAttack( owner, muzzleOrigin, muzzleAxis[0] );
