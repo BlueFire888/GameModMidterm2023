@@ -1822,6 +1822,9 @@ void idPlayer::Spawn( void ) {
 		spectating = true;
 	}
 
+	//MJ
+	gameLocal.Printf("%s", "We're in Spawn()");
+
 	// set our collision model
 	physicsObj.SetSelf( this );
 	SetClipModel( );
@@ -4364,7 +4367,6 @@ float idPlayer::PowerUpModifier( int type ) {
 			}
 		}
 	}
-
 	return mod;
 }
 
@@ -5602,6 +5604,7 @@ void idPlayer::NextWeapon( void ) {
 		idealWeapon = w;
 		weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
 		UpdateHudWeapon();
+		switchweapon = true;
 	}
 
 #endif
@@ -5700,6 +5703,7 @@ void idPlayer::PrevWeapon( void ) {
 		idealWeapon = w;
 		weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
 		UpdateHudWeapon();
+		switchweapon = true;
 	}
 #endif
 // RAVEN END
@@ -14080,20 +14084,13 @@ int idPlayer::CanSelectWeapon(const char* weaponName)
 
 // RITUAL END
 
-
-void idPlayer::PlayerUpgrade() {
-	idUserInterface* _hud;
-	_hud = this->GetHud();
-	if (!_hud) {return;}
-	_hud->HandleNamedEvent("hideUpgrade");
-	//_hud->Redraw(gameLocal.time);
-
-}
+//MJ start
 
 void idPlayer::LevelUp() {
 	idUserInterface* _hud;
 	_hud = this->GetHud();
 	if (!_hud) { return; }
+	_hud->HandleNamedEvent("showUpgrade");
 	_hud->SetStateString("upgradetitle", "Level Up!");
 	idStr Upgrade1 = GetLevelUpText();
 	idStr Upgrade2 = GetLevelUpText();
@@ -14116,7 +14113,6 @@ void idPlayer::LevelUp() {
 }
 
 idStr idPlayer::GetLevelUpText() {
-	//MJ start
 	int weaponid = (rand() % 6) + 1;
 	char* name;
 	const char* attribute;
@@ -14159,6 +14155,79 @@ idStr idPlayer::GetLevelUpText() {
 	}
 	output += "Up";
 	return output;
-
-	// MJ END
 }
+
+void idPlayer::ApplyUpgrade(int option) {
+	idUserInterface* _hud;
+	_hud = this->GetHud();
+	idStr upgrade;
+	if (!_hud) { return; }
+	switch (option) {
+		case 1:
+			upgrade = _hud->GetStateString("upgrade1");
+			break;
+		case 2:
+			upgrade = _hud->GetStateString("upgrade2");
+			break;
+		case 3:
+			upgrade = _hud->GetStateString("upgrade3");
+			break;
+		default:
+			_hud->HandleNamedEvent("hideUpgrade");
+			return;
+	}
+	//check for class names
+	if (upgrade.Find("Lightning Wand",false) != -1) {
+		if (upgrade.Find("Damage") != -1) {
+			//Add Lightning Wand Damage
+			Ldamagemod += 0.05f;
+		}
+		else {
+			//Add Lightning Wand Attackspeed
+			Lfireratemod *= 0.97f;
+			Lupdatefirerate = true;
+		}
+	} else if (upgrade.Find("Fireball Wand",false) != -1) {
+		if (upgrade.Find("Damage", false) != -1) {
+			//Add Fireball Wand Damage
+			Fdamagemod += 0.05f;
+		}
+		else {
+			//Add Fireball Wand Attackspeed
+			Ffireratemod *= 0.97f;
+			Fupdatefirerate = true;
+		} 
+	} else if(upgrade.Find("Whip",false) != -1) {
+		if (upgrade.Find("Damage",false) != -1) {
+			//Add Whip Damage
+			Wdamagemod += 0.05f;
+		}
+		else {
+			//Add Whip Attackspeed
+			Wfireratemod *= 0.95f;
+			Wupdatefirerate = true;
+		}
+	} else if (upgrade.Find("Damage",false) != -1) {
+		damagemod += 0.1f;
+	}
+	else if (upgrade.Find("Attack Speed",false) != -1){
+		fireratemod *= 0.95f;
+		updatefirerate = true;
+	}
+	else if (upgrade.Find("Health", false) != -1) {
+		inventory.maxHealth += 20;
+		health += 20;
+		gameLocal.Printf("%d", inventory.maxHealth);
+		UpdateHudStats(_hud);
+	}
+	
+	_hud->HandleNamedEvent("hideUpgrade");
+	return;
+
+
+
+
+
+}
+
+// MJ END

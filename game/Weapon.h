@@ -331,7 +331,7 @@ public:
 	idEntityPtr<idEntity>			projectileEnt;
 	idVec3							ejectOffset;
 
-	int								fireRate;
+	float								fireRate;
 	int								altFireRate;
 	float							spread;
 	int								nextAttackTime;

@@ -3041,23 +3041,7 @@ void Cmd_ClientOverflowReliable_f( const idCmdArgs& args ) {
 //MJ START
 void Cmd_UpgradeSelect1_f(const idCmdArgs& args) {
 	idPlayer* player = gameLocal.GetLocalPlayer();
-	if (!player) {
-		gameLocal.Printf("%s\n", "Null Player");
-		return;
-	}
-	idUserInterface* _hud = player->GetHud();
-	if (!_hud) {
-		gameLocal.Printf("%s\n", "Null HUD");
-		return;
-	}
-	const char* weapon;
-	weapon = _hud->GetStateString("gui::upgrade1");
-	if (!weapon) {
-		gameLocal.Printf("%s\n", "Null Weapon");
-		return;
-	}
-	gameLocal.Printf("%s\n", weapon);
-	player->PlayerUpgrade();
+	player->ApplyUpgrade(1);
 }
 
 /*

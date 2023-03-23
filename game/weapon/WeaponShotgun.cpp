@@ -27,6 +27,7 @@ protected:
 	float               range;
 	rvClientEffectPtr	impactEffect;
 	int					impactMaterial;
+	//bool fired = false;
 
 private:
 
@@ -179,17 +180,34 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 
 			//melee shotgun
 			Attack();
+			gameLocal.Printf("Fireratemod = %f\n", (owner->Wfireratemod));
+			if (owner->switchweapon) {
+				owner->Wupdatefirerate = true;
+				owner->updatefirerate = true;
+				owner->switchweapon = false;
+			}
+			if (owner->Wupdatefirerate) {
+				fireRate *= (owner->Wfireratemod);
+				owner->Wupdatefirerate = false;
+			}
+			if (owner->updatefirerate) {
+				fireRate *= (owner->fireratemod);
+				owner->updatefirerate = false;
+			}
+			gameLocal.Printf("Firerate = %f\n", fireRate);
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
-			PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
+			//PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
 			return SRESULT_STAGE( STAGE_WAIT );
 	
 		case STAGE_WAIT:
-			if ( (!gameLocal.isMultiplayer && (wsfl.lowerWeapon || AnimDone( ANIMCHANNEL_ALL, 0 )) ) || AnimDone( ANIMCHANNEL_ALL, 0 ) ) {
+			if ((!gameLocal.isMultiplayer && (wsfl.lowerWeapon || AnimDone(ANIMCHANNEL_ALL, 0))) || AnimDone(ANIMCHANNEL_ALL, 0) /* || fired*/) {
 				SetState( "Idle", 0 );
+				//fired = false;
 				return SRESULT_DONE;
 			}									
-			if ( wsfl.attack && gameLocal.time >= nextAttackTime && AmmoInClip() ) {
+			if ( wsfl.attack && gameLocal.time >= (nextAttackTime && AmmoInClip() )) {
 				SetState( "Fire", 0 );
+				//fired = true;
 				return SRESULT_DONE;
 			}
 			if ( clipSize ) {
@@ -376,7 +394,7 @@ void rvWeaponShotgun::Attack(void) {
 	if (gameLocal.time > nextAttackTime) {
 		if (ent) {
 			if (ent->fl.takedamage) {
-				float dmgScale = 1.0f;
+				float dmgScale = 1.0f + owner->damagemod + owner->Wdamagemod;
 				dmgScale *= owner->PowerUpModifier(PMOD_MELEE_DAMAGE);
 				ent->Damage(owner, owner, playerViewAxis[0], spawnArgs.GetString("def_damage"), dmgScale, 0);
 			}

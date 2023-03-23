@@ -28,6 +28,7 @@ public:
 
 	void					Save( idSaveGame *saveFile ) const;
 	void					Restore( idRestoreGame *saveFile );
+	
 
 protected:
 
@@ -227,6 +228,7 @@ void WeaponNapalmGun::Restore( idRestoreGame *saveFile ) {
 	saveFile->ReadInt(previousAmmo);
 }
 
+
 /*
 ===============================================================================
 
@@ -394,19 +396,34 @@ stateResult_t WeaponNapalmGun::State_Fire( const stateParms_t& parms ) {
 	switch ( parms.stage ) {
 		case STAGE_INIT:
 			if ( wsfl.zoom ) {
-				nextAttackTime = gameLocal.time + (altFireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
+				nextAttackTime = gameLocal.time + (altFireRate * owner->PowerUpModifier ( PMOD_FIRERATE ) + owner->fireratemod);
 				Attack ( true, 20, spread, 0, 1.0f );
 				PlayAnim ( ANIMCHANNEL_ALL, "idle", parms.blendFrames );
-				//fireHeld = true;
 			} else {
+				gameLocal.Printf("Fireratemod = %f\n", (owner->Ffireratemod));
+				if (owner->switchweapon) {
+					owner->Fupdatefirerate = true;
+					owner->updatefirerate = true;
+					owner->switchweapon = false;
+				}
+				if (owner->Fupdatefirerate) {
+					fireRate *= (owner->Ffireratemod);
+					owner->Fupdatefirerate = false;
+				}
+				if (owner->updatefirerate) {
+					fireRate *= (owner->fireratemod);
+					owner->updatefirerate = false;
+				}
+				
+				gameLocal.Printf("Firerate = %f\n", fireRate);
 				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-				Attack ( false, 1, spread, 0, 1.0f );
+				Attack ( false, 1, spread, 0, 1.0f + owner->damagemod + owner->Fdamagemod);
 
 				int animNum = viewModel->GetAnimator()->GetAnim ( "fire" );
 				if ( animNum ) {
 					idAnim* anim;
 					anim = (idAnim*)viewModel->GetAnimator()->GetAnim ( animNum );				
-					anim->SetPlaybackRate ( (float)anim->Length() / (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE )) );
+					anim->SetPlaybackRate ( (float)anim->Length() / (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE )));
 				}
 
 				PlayAnim ( ANIMCHANNEL_ALL, "fire", parms.blendFrames );

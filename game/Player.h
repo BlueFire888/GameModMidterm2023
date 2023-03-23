@@ -797,10 +797,22 @@ public:
 // RITUAL END
 
 	//MJ START
-	void PlayerUpgrade();
 	void LevelUp();
 	idStr GetLevelUpText();
-
+	void ApplyUpgrade(int option);
+	float damagemod = 0.0f;
+	float Fdamagemod = 0.0f;
+	float Ldamagemod = 0.0f;
+	float Wdamagemod = 0.0f;
+	float fireratemod = 1.0f;
+	float Ffireratemod = 1.0f;
+	float Lfireratemod = 1.0f;
+	float Wfireratemod = 1.0f;
+	bool updatefirerate = false;
+	bool Fupdatefirerate = false;
+	bool Lupdatefirerate = false;
+	bool Wupdatefirerate = false;
+	bool switchweapon = false;
 	//MJ END
 
 

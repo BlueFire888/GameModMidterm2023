@@ -256,6 +256,7 @@ rvWeaponLightningGun::Think
 */
 void rvWeaponLightningGun::Think ( void ) {
 	trace_t	  tr;
+	float newFR = 1.0f;
 
 	rvWeapon::Think();
 
@@ -308,16 +309,30 @@ void rvWeaponLightningGun::Think ( void ) {
 	// Inflict damage on all targets being attacked
 	if ( !gameLocal.isClient && gameLocal.time >= nextAttackTime ) {
 		int    i;
-		float  power = 1.0f;
+		float  power = 1.0f + owner->damagemod + owner->Ldamagemod;
 		idVec3 dir;
 		
 		owner->inventory.UseAmmo( ammoType, ammoRequired );
 		
 		dir = tr.endpos - origin;
 		dir.Normalize ( );
-		
+		gameLocal.Printf("Fireratemod = %f\n", (owner->Lfireratemod));
+		if (owner->switchweapon) {
+			owner->Lupdatefirerate = true;
+			owner->updatefirerate = true;
+			owner->switchweapon = false;
+		}
+		if (owner->Lupdatefirerate) {
+			fireRate *= (owner->Lfireratemod);
+			owner->Lupdatefirerate = false;
+		}
+		if (owner->updatefirerate) {
+			fireRate *= (owner->fireratemod);
+			owner->updatefirerate = false;
+		}
+		gameLocal.Printf("Firerate = %f\n", fireRate);
 		nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
-		Attack ( currentPath.target, dir, power );
+		Attack ( currentPath.target, dir, power);
 		for ( i = 0; i < chainLightning.Num(); i ++, power *= 0.75f ) {
 			Attack ( chainLightning[i].target, chainLightning[i].normal, power );
 		}
