@@ -813,6 +813,7 @@ public:
 	bool Lupdatefirerate = false;
 	bool Wupdatefirerate = false;
 	bool switchweapon = false;
+	bool helpmenuout = false;
 	//MJ END
 
 

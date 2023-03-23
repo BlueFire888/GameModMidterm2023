@@ -180,7 +180,6 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 
 			//melee shotgun
 			Attack();
-			gameLocal.Printf("Fireratemod = %f\n", (owner->Wfireratemod));
 			if (owner->switchweapon) {
 				owner->Wupdatefirerate = true;
 				owner->updatefirerate = true;
@@ -194,7 +193,6 @@ stateResult_t rvWeaponShotgun::State_Fire( const stateParms_t& parms ) {
 				fireRate *= (owner->fireratemod);
 				owner->updatefirerate = false;
 			}
-			gameLocal.Printf("Firerate = %f\n", fireRate);
 			nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier(PMOD_FIRERATE));
 			//PlayAnim( ANIMCHANNEL_ALL, "fire", 0 );	
 			return SRESULT_STAGE( STAGE_WAIT );

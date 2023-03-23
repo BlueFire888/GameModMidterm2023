@@ -400,7 +400,6 @@ stateResult_t WeaponNapalmGun::State_Fire( const stateParms_t& parms ) {
 				Attack ( true, 20, spread, 0, 1.0f );
 				PlayAnim ( ANIMCHANNEL_ALL, "idle", parms.blendFrames );
 			} else {
-				gameLocal.Printf("Fireratemod = %f\n", (owner->Ffireratemod));
 				if (owner->switchweapon) {
 					owner->Fupdatefirerate = true;
 					owner->updatefirerate = true;
@@ -414,8 +413,6 @@ stateResult_t WeaponNapalmGun::State_Fire( const stateParms_t& parms ) {
 					fireRate *= (owner->fireratemod);
 					owner->updatefirerate = false;
 				}
-				
-				gameLocal.Printf("Firerate = %f\n", fireRate);
 				nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 				Attack ( false, 1, spread, 0, 1.0f + owner->damagemod + owner->Fdamagemod);
 

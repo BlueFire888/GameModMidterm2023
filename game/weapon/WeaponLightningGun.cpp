@@ -316,7 +316,6 @@ void rvWeaponLightningGun::Think ( void ) {
 		
 		dir = tr.endpos - origin;
 		dir.Normalize ( );
-		gameLocal.Printf("Fireratemod = %f\n", (owner->Lfireratemod));
 		if (owner->switchweapon) {
 			owner->Lupdatefirerate = true;
 			owner->updatefirerate = true;
@@ -330,7 +329,6 @@ void rvWeaponLightningGun::Think ( void ) {
 			fireRate *= (owner->fireratemod);
 			owner->updatefirerate = false;
 		}
-		gameLocal.Printf("Firerate = %f\n", fireRate);
 		nextAttackTime = gameLocal.time + (fireRate * owner->PowerUpModifier ( PMOD_FIRERATE ));
 		Attack ( currentPath.target, dir, power);
 		for ( i = 0; i < chainLightning.Num(); i ++, power *= 0.75f ) {

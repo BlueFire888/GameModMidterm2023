@@ -1822,9 +1822,6 @@ void idPlayer::Spawn( void ) {
 		spectating = true;
 	}
 
-	//MJ
-	gameLocal.Printf("%s", "We're in Spawn()");
-
 	// set our collision model
 	physicsObj.SetSelf( this );
 	SetClipModel( );
@@ -1877,7 +1874,11 @@ void idPlayer::Spawn( void ) {
 		if ( cursor ) {
 			cursor->Activate( true, gameLocal.time );
 		}
-		
+		hud->SetStateString("upgradetitle", "Character Select");
+		hud->SetStateString("upgrade1", "1] Anthony: Whip\nand Health Up");
+		hud->SetStateString("upgrade2", "2] Maggie: Fireball Wand and Damage Up");
+		hud->SetStateString("upgrade3", "3] Ricken: Lightning Wand and Attack Speed Up");
+		hud->HandleNamedEvent("hideHelp");
 		// Load 
 
 		if ( spawnArgs.GetString ( "cinematicHud", "", temp ) ) {
@@ -14177,7 +14178,19 @@ void idPlayer::ApplyUpgrade(int option) {
 			return;
 	}
 	//check for class names
-	if (upgrade.Find("Lightning Wand",false) != -1) {
+	if (upgrade.Find("Anthony", false) != -1) {
+		GiveItem("weapon_shotgun");
+		inventory.maxHealth += 20;
+		health += 20;
+		UpdateHudStats(_hud);
+	} else if (upgrade.Find("Maggie", false) != -1) {
+		GiveItem("weapon_napalmgun");
+		damagemod += 0.12f;
+	} else if (upgrade.Find("Ricken", false) != -1) {
+		GiveItem("weapon_lightninggun");
+		fireratemod *= 0.93f;
+		updatefirerate = true;
+	} else if (upgrade.Find("Lightning Wand",false) != -1) {
 		if (upgrade.Find("Damage") != -1) {
 			//Add Lightning Wand Damage
 			Ldamagemod += 0.05f;
@@ -14217,7 +14230,6 @@ void idPlayer::ApplyUpgrade(int option) {
 	else if (upgrade.Find("Health", false) != -1) {
 		inventory.maxHealth += 20;
 		health += 20;
-		gameLocal.Printf("%d", inventory.maxHealth);
 		UpdateHudStats(_hud);
 	}
 	

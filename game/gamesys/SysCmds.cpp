@@ -3044,6 +3044,40 @@ void Cmd_UpgradeSelect1_f(const idCmdArgs& args) {
 	player->ApplyUpgrade(1);
 }
 
+void Cmd_UpgradeSelect2_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	player->ApplyUpgrade(2);
+}
+
+void Cmd_UpgradeSelect3_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	player->ApplyUpgrade(3);
+}
+
+void Cmd_UpgradeSelect4_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	player->ApplyUpgrade(4);
+}
+
+void Cmd_LevelUp_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	player->LevelUp();
+}
+
+void Cmd_HelpMenu_f(const idCmdArgs& args) {
+	idPlayer* player = gameLocal.GetLocalPlayer();
+	idUserInterface* _hud;
+	_hud = player->GetHud();
+	if (player->helpmenuout) {
+		_hud->HandleNamedEvent("hideHelp");
+		player->helpmenuout = false;
+	}
+	else {
+		_hud->HandleNamedEvent("showHelp");
+		player->helpmenuout = true;
+	}
+	return;
+}
 /*
 =================
 idGameLocal::InitConsoleCommands
@@ -3241,6 +3275,11 @@ void idGameLocal::InitConsoleCommands( void ) {
 
 // MJ START
 	cmdSystem->AddCommand("upgrade1", Cmd_UpgradeSelect1_f, CMD_FL_GAME, "Picks Upgrade 1");
+	cmdSystem->AddCommand("upgrade2", Cmd_UpgradeSelect2_f, CMD_FL_GAME, "Picks Upgrade 2");
+	cmdSystem->AddCommand("upgrade3", Cmd_UpgradeSelect3_f, CMD_FL_GAME, "Picks Upgrade 3");
+	cmdSystem->AddCommand("upgrade4", Cmd_UpgradeSelect4_f, CMD_FL_GAME, "Closes the upgrade Menu");
+	cmdSystem->AddCommand("levelup", Cmd_LevelUp_f, CMD_FL_GAME, "Levels Up the character");
+	cmdSystem->AddCommand("helpmenu", Cmd_HelpMenu_f, CMD_FL_GAME, "Toggles the help menu");
 }
 
 /*
